@@ -6,7 +6,17 @@
 
 ### Environment Setup
 
-To set up the environment, you can use either `conda` with the provided `env.yml` file or `requirements.txt`:
+To set up the environment, you can use either `poetry` (preferred) or `conda` with the provided `env.yml` file or `requirements.txt`:
+
+For poetry, run:
+```
+poetry install
+poetry shell
+```
+
+For conda, run:
+`conda create --name personalllm python=3.10`
+`conda env update --file env.yml --prune`
 
 ### Dataset Generation
 

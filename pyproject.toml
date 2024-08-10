@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "personalllm"
+version = "0.1.0"
+description = ""
+authors = ["andrew siah <theandrewsiah@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+torch = "2.3.0"
+torchvision = "0.18.0"
+torchaudio = "2.3.0"
+huggingface-hub = "^0.23.4"
+tqdm = "^4.66.4"
+python-dotenv = "^1.0.1"
+transformers = "4.40.0"
+rewardbench = "^0.1.2"
+accelerate = "^0.31.0"
+aiohttp = "^3.9.5"
+bert-score = "^0.3.13"
+datasets = "^2.20.0"
+evaluate = "^0.4.2"
+fschat = "^0.2.36"
+matplotlib = "^3.9.0"
+numpy = "^2.0.0"
+pandas = "^2.2.2"
+pyyaml = "^6.0.1"
+requests = "^2.32.3"
+scipy = "^1.14.0"
+seaborn = "^0.13.2"
+sentence-transformers = "^3.0.1"
+setuptools = "^70.1.1"
+vllm = "^0.5.0.post1"
+jupyter = "^1.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
