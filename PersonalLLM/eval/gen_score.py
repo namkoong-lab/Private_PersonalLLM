@@ -30,6 +30,10 @@ class DotDict(dict):
         self[name] = value
     def __delattr__(self, name):
         del self[name]
+    def __getstate__(self):
+        return self
+    def __setstate__(self, state):
+        self.update(state)
 
 def load_and_combine_datasets(dataset_names):
     """Load datasets and combine them into a single dataset."""
@@ -142,21 +146,26 @@ def compute_rewards(args, new_dataset, start, end, batch_size, model_pipeline, p
     return Dataset.from_dict(rewarded_dataset)
 
 def worker(gpu, start_idx, end_idx, return_dict, worker_id, args, model_builder, pipeline_builder, quantized, dataset):
-    device = torch.device(f"cuda:{gpu}" if torch.cuda.is_available() else "cpu")
-    tokenizer_path = args.tokenizer if args.tokenizer else args.tokenizer_name
-    tokenizer = AutoTokenizer.from_pretrained(tokenizer_path, trust_remote_code=args.trust_remote_code)
-    tokenizer, model_pipeline = init_models(args, model_builder, pipeline_builder, quantized, tokenizer, device)
-    new_dataset = generate_reward_model_formatted_responses(dataset, tokenizer)
-    pipe_kwargs = {
-        "batch_size": args.batch_size,  # eval_args.inference_batch_size,
-        "truncation": True,
-        "padding": "longest", # True
-        "max_length": args.max_length,
-        "function_to_apply": "none",  # Compute raw logits
-        "return_token_type_ids": False,
-    }
-    rewarded_dataset = compute_rewards(args, new_dataset, start_idx, end_idx, args.batch_size, model_pipeline, pipe_kwargs)
-    return_dict[worker_id] = rewarded_dataset
+    try:
+        device = torch.device(f"cuda:{gpu}" if torch.cuda.is_available() else "cpu")
+        tokenizer_path = args.tokenizer if args.tokenizer else args.tokenizer_name
+        tokenizer = AutoTokenizer.from_pretrained(tokenizer_path, trust_remote_code=args.trust_remote_code)
+        tokenizer, model_pipeline = init_models(args, model_builder, pipeline_builder, quantized, tokenizer, device)
+        new_dataset = generate_reward_model_formatted_responses(dataset, tokenizer)
+        # print(f"New dataset: {new_dataset}")
+        pipe_kwargs = {
+            "batch_size": args.batch_size,
+            "truncation": True,
+            "padding": "longest",
+            "max_length": args.max_length,
+            "function_to_apply": "none",
+            "return_token_type_ids": False,
+        }
+        rewarded_dataset = compute_rewards(args, new_dataset, start_idx, end_idx, args.batch_size, model_pipeline, pipe_kwargs)
+        print(f"Worker {worker_id} completed successfully")
+        return_dict[worker_id] = rewarded_dataset
+    except Exception as e:
+        print(f"Worker {worker_id} failed with error: {str(e)}")
 
 
 def score_dataframe(to_do_df: pd.DataFrame, config_fp:str, reward_model:str) -> pd.DataFrame:
@@ -172,7 +181,7 @@ def score_dataframe(to_do_df: pd.DataFrame, config_fp:str, reward_model:str) -> 
     Returns:
         pd.DataFrame: DataFrame with an additional 'score' column.
     """
-    # Loading Config
+
     with open(config_fp, 'r') as file:
         config = yaml.safe_load(file)
 
@@ -185,8 +194,6 @@ def score_dataframe(to_do_df: pd.DataFrame, config_fp:str, reward_model:str) -> 
     else:
         raise ValueError(f"Reward model '{reward_model}' not found in REWARD_MODELS.")
 
-
-    # Convert DataFrame to Dataset
     dataset = Dataset.from_pandas(to_do_df)
 
     device_count = len(args.gpus)
@@ -213,43 +220,50 @@ def score_dataframe(to_do_df: pd.DataFrame, config_fp:str, reward_model:str) -> 
     model_builder = config["model_builder"]
 
     print(f"PIPELINE_BUILDER: {pipeline_builder}")
+    print(f"MODEL_BUILDER: {model_builder}")
 
     if custom_dialogue:
         raise NotImplementedError("Custom dialogue not implemented yet for simpler data formatting.")
 
     processes = []
-
     manager = Manager()
     return_dict = manager.dict()
     worker_id = 0
 
     for i, gpu in enumerate(args.gpus):
-        gpu_start = args.start + i * samples_per_gpu
-        gpu_end = args.start + (i + 1) * samples_per_gpu if i < device_count - 1 else len(dataset)
-
-        p = Process(target=worker, args=(gpu, gpu_start, gpu_end, return_dict, worker_id, args, model_builder, pipeline_builder, quantized, dataset))
-        worker_id += 1
+        gpu_row_start = args.start + i * samples_per_gpu
+        gpu_row_end = args.start + (i + 1) * samples_per_gpu if i < device_count - 1 else len(dataset)
+        p = Process(target=worker, args=(gpu, gpu_row_start, gpu_row_end, return_dict, worker_id, args, model_builder, pipeline_builder, quantized, dataset))
         processes.append(p)
+        worker_id += 1
 
     try:
+        # Start all processes
         for p in processes:
             p.start()
 
+        # Wait for all processes to complete
         for p in processes:
             p.join()
     except Exception as e:
-        print(f"Exception occurred: {e}, terminating processes...")
+        print(f"Exception occurred: {e}")
     finally:
+        # Ensure all processes are terminated
         for p in processes:
-            p.terminate()
-            p.join()
+            if p.is_alive():
+                print(f"Terminating process {p.pid}")
+                p.terminate()
+                p.join(timeout=5)  # Wait for 5 seconds for the process to terminate
+                if p.is_alive():
+                    print(f"Process {p.pid} did not terminate, killing it")
+                    p.kill()
 
     all_rewarded_datasets = []
     for i in range(worker_id):
         try:
             all_rewarded_datasets.append(return_dict[i])
         except KeyError:
-            print(f"Warning: Worker {i} did not return a dataset.")
+            print(f"Error: Worker {i} did not return a dataset.")
 
     if all_rewarded_datasets:
         concatenated_dataset = Dataset.from_dict({

@@ -17,7 +17,7 @@ import importlib
 
 directory = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'algorithms')
 for file in os.listdir(directory):
-    if file.endswith('.py') and file != '__init__.py':
+    if file.endswith('.py') and file != '__init__.py' and file != 'BaseAlgorithm.py':
         module_name = file[:-3]  # removes the .py at the end
         module = importlib.import_module('algorithms.' + module_name)
         globals()[module_name] = module
@@ -80,7 +80,7 @@ def evaluate_response_algorithm(response_algorithm_class: Type[BaseAlgorithm]) -
 if __name__ == "__main__":
     start_time = time.time()
 
-    mp.set_start_method('spawn')
+    mp.set_start_method('spawn', force=True)
     
     parser = argparse.ArgumentParser()
     parser.add_argument("--conf_filepath", type=str, default="../eval/eval_conf.yaml", help="Path to the configuration file")
