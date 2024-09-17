@@ -8,7 +8,7 @@ PersonalLLM/eval/sweep_logs.txt
 PersonalLLM/eval/similar_pairs.txt
 PersonalLLM/eval/sweep_logs.txt
 !PersonalLLM/data/.env.example
-
+PersonalLLM/eval/schemas/*
 
 
 .ipynb_checkpoints
@@ -429,7 +429,6 @@ celerybeat-schedule
 
 # dotenv
 .env
-.env.*
 
 # virtualenv
 venv/
