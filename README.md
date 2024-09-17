@@ -22,6 +22,18 @@ For conda, run:
 
 For detailed instructions on generating the dataset, please see the [Dataset Generation Guide](PersonalLLM/data/README.md).
 
+### Dataset Samples
+
+- [PersonalLLM](https://huggingface.co/datasets/as6154/PersonalLLM)
+- [PersonalLLM-Eval](https://huggingface.co/datasets/namkoong-lab/PersonalLLM_Eval)
+
 ### Personalization Algorithm Evaluation
 
 For comprehensive guidelines on evaluating personalization algorithms, refer to the [Evaluation Guide](PersonalLLM/eval/README.md).
+
+
+## Paper
+
+The paper can be found [here](https://arxiv.org/abs/2405.10273).
+
+All plots were generated using the code in [paper/visualize.ipynb](paper/visualize.ipynb) file.
