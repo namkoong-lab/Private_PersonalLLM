@@ -7,9 +7,8 @@
 
 Run the evaluation script with different algorithms:
 - TestAlgorithm in Debug Mode: `python eval.py --algorithm=TestAlgorithm --debug`
-- KShotICLAlgorithm in Debug Mode: `python eval.py --algorithm=KShotICLAlgorithm --eval_type=pairwise_pref --num_shots=3 --responses_to_include=winning_and_losing --debug`
-- MetaLearnKShotICLAlgorithm in Debug Mode: `python eval.py --algorithm=MetaLearnKShotICLAlgorithm --eval_type=pairwise_pref --num_shots=3 --user_embedding_computed_from_n_pr=3 --responses_to_include=winning_and_losing --debug`
-To execute the sweep script:
+- KShotICLAlgorithm in Debug Mode: ```python eval.py --algorithm=KShotICLAlgorithm --eval_type=pairwise_pref --num_shots=3 --responses_to_include=winning_and_losing --debug```
+- To execute the sweep script:
 `python sweep.py`
 
 
@@ -49,18 +48,20 @@ To create a new algorithm for PersonalLLM, follow these steps:
 5. Reference existing algorithms for implementation details.
 
 6. To use your new algorithm, update the main evaluation script to import and instantiate your algorithm class. Then run 
+`python eval.py --algorithm=YourNewAlgorithm --eval_type=pairwise_pref`
+
 
 ## Algorithm Examples
 Refer to our paper for explanation for the implementation of the following algorithms.
 
 ### MetaLearnKShotICLAlgorithm
-This algorithm uses meta-learning to generate personalized responses. It finds similar users and prompts from a meta-learning database, then constructs in-context learning examples. The algorithm then generates a response using these examples and the test prompt.
+This algorithm is the implementation of Section 4.2 in the paper. It finds similar users and prompts from an interaction history dataset, then constructs in-context learning examples for generation.
 
 ### LookUpMetaLearnKShotICLAlgorithm
-This algorithm is an optimized version of MetaLearnKShotICLAlgorithm, using pre-computed data for faster lookup. It finds users with similar prompts, ranks them, and uses their data to construct in-context learning examples. The algorithm then generates a response based on these examples and the test prompt.
+This algorithm is an optimized version of MetaLearnKShotICLAlgorithm, using pre-computed data for faster lookup. It finds users with similar prompts, ranks them, and uses their data to construct in-context learning examples for generation
 
 ### KShotICLAlgorithm
-This algorithm implements a basic k-shot in-context learning approach. It finds similar prompts from a dataset, constructs in-context learning examples, and generates a response based on these examples and the test prompt.
+This algorithm implements a basic k-shot in-context learning approach. It finds similar prompts from a dataset, constructs in-context learning examples, and generates a response.
 
 ### SelfKShotICLAlgorithm
-This algorithm uses the user's own history for in-context learning. It constructs examples from the user's past interactions, including liked and disliked responses. The algorithm then generates a response based on these personal examples and the test prompt.
+This algorithm uses the user's own history for in-context learning. It constructs examples from the user's past interactions, including liked and disliked responses to generate a response.

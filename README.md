@@ -52,5 +52,3 @@ All plots were generated using the code in [paper/visualize.ipynb](paper/visuali
 ## Contact:
 
 Please email `andrew.siah@columbia.edu` for any help and open an issue for any bugs.
-
-## Cite: 
