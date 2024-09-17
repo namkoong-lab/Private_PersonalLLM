@@ -11,8 +11,6 @@ from multiprocessing import Process, Manager
 import multiprocessing
 from datasets import Dataset, load_dataset
 from transformers import AutoTokenizer, pipeline, PreTrainedTokenizer
-from accelerate import Accelerator
-from accelerate.logging import get_logger
 from fastchat.conversation import get_conv_template, Conversation
 from rewardbench import (
     DPO_MODEL_CONFIG,
@@ -20,7 +18,12 @@ from rewardbench import (
     check_tokenizer_chat_template,
 )
 from constants import REWARD_MODELS
+import logging
 
+# Set up logging
+log_level = os.environ.get('LOG_LEVEL', 'INFO').upper()
+logging.basicConfig(level=log_level, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 class DotDict(dict):
     """Dictionary with dot notation access to attributes."""
@@ -37,12 +40,14 @@ class DotDict(dict):
 
 def load_and_combine_datasets(dataset_names):
     """Load datasets and combine them into a single dataset."""
+    logger.info(f"Loading and combining datasets: {dataset_names}")
     datasets = [load_dataset(name)['train'] if 'train' in load_dataset(name) else load_dataset(name) for name in dataset_names]
     combined_data = {key: sum([list(dataset[key]) for dataset in datasets], []) for key in datasets[0].features}
+    logger.info(f"Combined dataset created with {len(combined_data[list(combined_data.keys())[0]])} samples")
     return Dataset.from_dict(combined_data)
 
-
 def init_models(args, model_builder, pipeline_builder, quantized, tokenizer, device):
+    logger.info(f"Initializing models on device: {device}")
     if quantized:
         model_kwargs = {
             "load_in_8bit": True,
@@ -72,13 +77,15 @@ def init_models(args, model_builder, pipeline_builder, quantized, tokenizer, dev
     if not check_tokenizer_chat_template(tokenizer):
         reward_pipe.tokenizer.add_eos_token = True
 
+    logger.info("Models initialized successfully")
     return tokenizer, reward_pipe
 
 def generate_reward_model_formatted_responses(dataset, tokenizer: PreTrainedTokenizer = None, conv: Conversation = None):
+    logger.info("Generating reward model formatted responses")
     stylized_columns = {}
     updated_rows = []
     if tokenizer is None and tokenizer.chat_template is None and not conv:
-        print("Warning: No tokenizer chat template or fastchat conversation passed. Using Default Template. Please check if that's alright for current model.")
+        logger.warning("Warning: No tokenizer chat template or fastchat conversation passed. Using Default Template. Please check if that's alright for current model.")
     for row in tqdm(dataset, desc="Processing rows"):
         new_row = row.copy()
         for key, value in row.items():
@@ -108,9 +115,11 @@ def generate_reward_model_formatted_responses(dataset, tokenizer: PreTrainedToke
                 new_row["rformatted_promptresponse"] = stylized_response
         updated_rows.append(new_row)
     dataset = Dataset.from_dict({key: [dic[key] for dic in updated_rows] for key in updated_rows[0]})
+    logger.info(f"Generated {len(dataset)} formatted responses")
     return dataset
 
 def compute_rewards(args, new_dataset, start, end, batch_size, model_pipeline, pipe_kwargs):
+    logger.info(f"Computing rewards for samples {start} to {end}")
     rewarded_dataset = {}
 
     column_name = 'rformatted_promptresponse'
@@ -143,32 +152,39 @@ def compute_rewards(args, new_dataset, start, end, batch_size, model_pipeline, p
     rewarded_dataset[rewards_column_name] = rewards
     for column in new_dataset.features:
         rewarded_dataset[column] = new_dataset[column][start:end] 
+    logger.info(f"Computed rewards for {len(rewards)} samples")
     return Dataset.from_dict(rewarded_dataset)
 
 def worker(gpu, start_idx, end_idx, return_dict, worker_id, args, model_builder, pipeline_builder, quantized, dataset):
-    try:
-        device = torch.device(f"cuda:{gpu}" if torch.cuda.is_available() else "cpu")
-        tokenizer_path = args.tokenizer if args.tokenizer else args.tokenizer_name
-        tokenizer = AutoTokenizer.from_pretrained(tokenizer_path, trust_remote_code=args.trust_remote_code)
-        tokenizer, model_pipeline = init_models(args, model_builder, pipeline_builder, quantized, tokenizer, device)
-        new_dataset = generate_reward_model_formatted_responses(dataset, tokenizer)
-        # print(f"New dataset: {new_dataset}")
-        pipe_kwargs = {
-            "batch_size": args.batch_size,
-            "truncation": True,
-            "padding": "longest",
-            "max_length": args.max_length,
-            "function_to_apply": "none",
-            "return_token_type_ids": False,
-        }
-        rewarded_dataset = compute_rewards(args, new_dataset, start_idx, end_idx, args.batch_size, model_pipeline, pipe_kwargs)
-        print(f"Worker {worker_id} completed successfully")
-        return_dict[worker_id] = rewarded_dataset
-    except Exception as e:
-        print(f"Worker {worker_id} failed with error: {str(e)}")
+    logger.info(f"Worker {worker_id} started on GPU {gpu}")
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            print(f"Worker {worker_id} started (attempt {attempt + 1})")
+            device = torch.device(f"cuda:{gpu}" if torch.cuda.is_available() else "cpu")
+            tokenizer_path = args.tokenizer if args.tokenizer else args.tokenizer_name
+            tokenizer = AutoTokenizer.from_pretrained(tokenizer_path, trust_remote_code=args.trust_remote_code)
+            tokenizer, model_pipeline = init_models(args, model_builder, pipeline_builder, quantized, tokenizer, device)
+            new_dataset = generate_reward_model_formatted_responses(dataset, tokenizer)
 
+            pipe_kwargs = {
+                "batch_size": args.batch_size,
+                "truncation": True,
+                "padding": "longest",
+                "max_length": args.max_length,
+                "function_to_apply": "none",
+                "return_token_type_ids": False,
+            }
+            rewarded_dataset = compute_rewards(args, new_dataset, start_idx, end_idx, args.batch_size, model_pipeline, pipe_kwargs)
+            logger.info(f"Worker {worker_id} completed successfully")
+            return_dict[worker_id] = rewarded_dataset
+            return  # Exit the function if successful
+        except Exception as e:
+            logger.error(f"Worker {worker_id} failed on attempt {attempt + 1} with error: {str(e)}")
+            if attempt == max_retries - 1:
+                logger.error(f"Worker {worker_id} failed after {max_retries} attempts")
 
-def score_dataframe(to_do_df: pd.DataFrame, config_fp:str, reward_model:str) -> pd.DataFrame:
+def score_dataframe(to_do_df: pd.DataFrame, config_fp:str, reward_model:str, max_retries: int = 3) -> pd.DataFrame:
     """
     Takes in a DataFrame, adds a score column using the reward model, and returns the updated DataFrame.
     
@@ -177,11 +193,14 @@ def score_dataframe(to_do_df: pd.DataFrame, config_fp:str, reward_model:str) -> 
                                  Expected columns: ["data_idx", "n_rag", "choice", "prompt", "response"]
         config_fp (str): Filepath to the configuration YAML file containing parameters for scoring.
         reward_model (str, optional): The reward model to be used for scoring. If None, it will be read from the config file.
+        max_retries (int, optional): The maximum number of retries for failed workers. Defaults to 3.
     
     Returns:
         pd.DataFrame: DataFrame with an additional 'score' column.
     """
 
+    logger.info(f"Scoring dataframe using reward model: {reward_model}")
+    
     with open(config_fp, 'r') as file:
         config = yaml.safe_load(file)
 
@@ -192,6 +211,7 @@ def score_dataframe(to_do_df: pd.DataFrame, config_fp:str, reward_model:str) -> 
         args.tokenizer_name = REWARD_MODELS[reward_model]["tokenizer_name"]
         args.chat_template = REWARD_MODELS[reward_model]["fastchat_chat_template"]
     else:
+        logger.error(f"Reward model '{reward_model}' not found in REWARD_MODELS.")
         raise ValueError(f"Reward model '{reward_model}' not found in REWARD_MODELS.")
 
     dataset = Dataset.from_pandas(to_do_df)
@@ -199,6 +219,8 @@ def score_dataframe(to_do_df: pd.DataFrame, config_fp:str, reward_model:str) -> 
     device_count = len(args.gpus)
     total_samples = len(dataset)
     samples_per_gpu = total_samples // device_count
+
+    logger.info(f"Using {device_count} GPUs for {total_samples} samples")
 
     is_dpo = False
     MODEL_CONFIGS = REWARD_MODEL_CONFIG
@@ -219,62 +241,74 @@ def score_dataframe(to_do_df: pd.DataFrame, config_fp:str, reward_model:str) -> 
     pipeline_builder = config["pipeline_builder"]
     model_builder = config["model_builder"]
 
-    print(f"PIPELINE_BUILDER: {pipeline_builder}")
-    print(f"MODEL_BUILDER: {model_builder}")
+    logger.info(f"PIPELINE_BUILDER: {pipeline_builder}")
+    logger.info(f"MODEL_BUILDER: {model_builder}")
 
     if custom_dialogue:
+        logger.error("Custom dialogue not implemented yet for simpler data formatting.")
         raise NotImplementedError("Custom dialogue not implemented yet for simpler data formatting.")
 
     processes = []
     manager = Manager()
     return_dict = manager.dict()
-    worker_id = 0
 
     for i, gpu in enumerate(args.gpus):
         gpu_row_start = args.start + i * samples_per_gpu
         gpu_row_end = args.start + (i + 1) * samples_per_gpu if i < device_count - 1 else len(dataset)
-        p = Process(target=worker, args=(gpu, gpu_row_start, gpu_row_end, return_dict, worker_id, args, model_builder, pipeline_builder, quantized, dataset))
+        p = Process(target=worker, args=(gpu, gpu_row_start, gpu_row_end, return_dict, i, args, model_builder, pipeline_builder, quantized, dataset))
         processes.append(p)
-        worker_id += 1
 
     try:
-        # Start all processes
         for p in processes:
+            logger.info(f"Starting process: {p.name}")
             p.start()
 
-        # Wait for all processes to complete
         for p in processes:
+            logger.info(f"Joining process: {p.name}")
             p.join()
     except Exception as e:
-        print(f"Exception occurred: {e}")
+        logger.error(f"Exception occurred: {e}")
     finally:
-        # Ensure all processes are terminated
         for p in processes:
             if p.is_alive():
-                print(f"Terminating process {p.pid}")
+                logger.warning(f"Terminating process {p.pid}")
                 p.terminate()
-                p.join(timeout=5)  # Wait for 5 seconds for the process to terminate
+                p.join(timeout=5)
                 if p.is_alive():
-                    print(f"Process {p.pid} did not terminate, killing it")
+                    logger.warning(f"Process {p.pid} did not terminate, killing it")
                     p.kill()
 
     all_rewarded_datasets = []
-    for i in range(worker_id):
+    for i in range(len(args.gpus)):
         try:
             all_rewarded_datasets.append(return_dict[i])
         except KeyError:
-            print(f"Error: Worker {i} did not return a dataset.")
+            logger.error(f"Error: Worker {i} did not return a dataset.")
 
     if all_rewarded_datasets:
-        concatenated_dataset = Dataset.from_dict({
-            column: sum([list(ds[column]) for ds in all_rewarded_datasets], [])
-            for column in all_rewarded_datasets[0].features
-        })
+        concatenated_dataset = Dataset.from_dict(
+            {
+                column: sum([list(ds[column]) for ds in all_rewarded_datasets], [])
+                for column in all_rewarded_datasets[0].features
+            }
+        )
     else:
         concatenated_dataset = Dataset.from_dict({})
+        logger.error("No datasets were successfully processed")
+        raise RuntimeError("No datasets were successfully processed")
 
     concatenated_df = concatenated_dataset.to_pandas()
-    concatenated_df.rename(columns={'reward': 'score'}, inplace=True)
-    concatenated_df.drop(columns=['rformatted_promptresponse'], inplace=True)
+    concatenated_df.rename(columns={"reward": "score"}, inplace=True)
+    concatenated_df.drop(columns=["rformatted_promptresponse"], inplace=True)
     torch.cuda.empty_cache()
+    logger.info(f"Scoring completed. Dataframe shape: {concatenated_df.shape}")
     return concatenated_df
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--log_level", type=str, default="INFO", choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="Set the logging level")
+    args = parser.parse_args()
+
+    # Update the log level based on the parsed arguments
+    logging.getLogger().setLevel(getattr(logging, args.log_level.upper()))
+    logger.info("Starting gen_score.py")
