@@ -21,29 +21,29 @@ parser.add_argument(
     "--end", type=int, default=1000, help="End index for processing database"
 )
 parser.add_argument(
-    "--alpha", type=float, default=0.01, help="Alpha value for generating personas"
+    "--alpha", type=float, default=0.05, help="Alpha value for generating personas"
 )
 parser.add_argument(
     "--push_to_hub_path",
     type=str,
-    default="MetaLearningPrefDatabase2",
+    default="andrewsiah/Eval_Pref_Dataset2",
     help="Path to push the huggingface dataset",
 )
 parser.add_argument(
     "--seed", type=int, default=42, help="Seed for random number generation"
 )
 parser.add_argument(
-    "--max_interaction_length", type=int, default=50, help="Maximum interaction length"
+    "--max_interaction_length", type=int, default=6, help="Maximum interaction length"
 )
 parser.add_argument(
-    "--min_interaction_length", type=int, default=25, help="Minimum interaction length"
+    "--min_interaction_length", type=int, default=3, help="Minimum interaction length"
 )
 
 
 args = parser.parse_args()
 
-dataset = load_dataset("andrewsiah/Personalization_Bench_Cleaned")
-ds = dataset["train"]
+dataset = load_dataset("namkoong-lab/PersonalLLM")
+ds = dataset["test"]
 
 reward_models_names = sorted(list(REWARD_MODELS.keys()))
 n_rm = len(reward_models_names)
@@ -181,4 +181,4 @@ historical_database = pd.DataFrame(historical_data)
 historical_database = historical_database.groupby("person_id").first()
 
 historical_database_hf = Dataset.from_pandas(historical_database)
-historical_database_hf.push_to_hub(args.push_to_hub_path)
+historical_database_hf.push_to_hub(args.push_to_hub_path, split="test")

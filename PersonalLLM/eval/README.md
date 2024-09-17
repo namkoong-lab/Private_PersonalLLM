@@ -1,3 +1,5 @@
+# Quickstart
+
 ## Execution Guide:
 
 1. Change directory to 'eval': `cd eval`
@@ -5,14 +7,60 @@
 
 Run the evaluation script with different algorithms:
 - TestAlgorithm in Debug Mode: `python eval.py --algorithm=TestAlgorithm --debug`
-- VanillaICLAlgorithm on Pairwise Preference Setting: `python eval.py --algorithm=VanillaICLAlgorithm --eval_type=pairwise_pref`
-- MetaLearnTenKAlgorithm: `python eval.py --algorithm=MetaLearnTenKAlgorithm`
-
+- KShotICLAlgorithm in Debug Mode: `python eval.py --algorithm=KShotICLAlgorithm --eval_type=pairwise_pref --num_shots=3 --responses_to_include=winning_and_losing --debug`
+- MetaLearnKShotICLAlgorithm in Debug Mode: `python eval.py --algorithm=MetaLearnKShotICLAlgorithm --eval_type=pairwise_pref --num_shots=3 --user_embedding_computed_from_n_pr=3 --responses_to_include=winning_and_losing --debug`
 To execute the sweep script:
 `python sweep.py`
 
-## Personalization Algorithm:
 
-The algorithm processes unique personalities (3-5 conversations long), optionally using external datasets. It adds a `test_response` column to the dataset, containing responses to test prompts.
+# Developing New Personalization Algorithms
 
-The modified dataset is evaluated using 'eval.py'. Configuration parameters can be passed via argparse (e.g., `--debug`) or by modifying 'eval.py'.
+## Overview
+This repository contains various algorithms for generating personalized responses using in-context learning techniques. Each algorithm leverages different strategies to construct prompts and generate responses based on user interactions and preferences.
+
+## Developing a New Algorithm
+To create a new algorithm for PersonalLLM, follow these steps:
+
+1. Create a new Python file in the `PersonalLLM/eval/algorithms/` directory, naming it appropriately (e.g., `YourNewAlgorithm.py`).
+
+2. Import the necessary modules and the `BaseAlgorithm` class:
+
+   ```python
+   from algorithms.BaseAlgorithm import BaseAlgorithm
+   from datasets import Dataset
+   import logging
+   ```
+
+3. Define your algorithm class, inheriting from `BaseAlgorithm`:
+
+   ```python
+   class YourNewAlgorithm(BaseAlgorithm):
+       def __init__(self, args):
+           super().__init__(args)
+           self.logger = logging.getLogger(__name__)
+           # Initialize any additional attributes here
+   ```
+
+4. Implement the required methods:
+   - `generate_pairwise_pref_prompt(self, row: dict) -> str`: This method should generate a prompt based on the input row.
+   - `generate_responses(self, prompts: list)`: This method should generate responses for the given prompts.
+   - `generate_evaluation_responses(self, args) -> Dataset`: This method should generate evaluation responses for the entire dataset.
+
+5. Reference existing algorithms for implementation details.
+
+6. To use your new algorithm, update the main evaluation script to import and instantiate your algorithm class. Then run 
+
+## Algorithm Examples
+Refer to our paper for explanation for the implementation of the following algorithms.
+
+### MetaLearnKShotICLAlgorithm
+This algorithm uses meta-learning to generate personalized responses. It finds similar users and prompts from a meta-learning database, then constructs in-context learning examples. The algorithm then generates a response using these examples and the test prompt.
+
+### LookUpMetaLearnKShotICLAlgorithm
+This algorithm is an optimized version of MetaLearnKShotICLAlgorithm, using pre-computed data for faster lookup. It finds users with similar prompts, ranks them, and uses their data to construct in-context learning examples. The algorithm then generates a response based on these examples and the test prompt.
+
+### KShotICLAlgorithm
+This algorithm implements a basic k-shot in-context learning approach. It finds similar prompts from a dataset, constructs in-context learning examples, and generates a response based on these examples and the test prompt.
+
+### SelfKShotICLAlgorithm
+This algorithm uses the user's own history for in-context learning. It constructs examples from the user's past interactions, including liked and disliked responses. The algorithm then generates a response based on these personal examples and the test prompt.

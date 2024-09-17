@@ -13,13 +13,6 @@ class ZeroShotAlgorithm(BaseAlgorithm):
 
     def __init__(self, args):
         super().__init__(args)
-        self.llm = LLM(
-            model="meta-llama/Meta-Llama-3-8B-Instruct",
-            trust_remote_code=True,
-            tensor_parallel_size=1,
-            download_dir="/shared/share_mala/andrew/huggingface/cache",
-            disable_log_stats=True,
-        )
 
     def generate_prompt(self, row: dict) -> str:
         prompt = "User: " + row['test_prompt']
@@ -32,9 +25,10 @@ class ZeroShotAlgorithm(BaseAlgorithm):
 
     def generate_evaluation_responses(self, args) -> Dataset:
         debug = args.debug
-        dataset = self.eval_dataset
+        # dataset = self.eval_dataset
+        dataset = load_dataset("andrewsiah/Eval_Pref_Dataset_with_stella_400M_v5_embeddings", cache_dir=args.cache_dir)['test']
         if debug:
-            dataset = dataset.select(range(20))
+            dataset = dataset.select(range(50))
         prompts = [self.generate_prompt(dataset[i]) for i in range(len(dataset))]
         outputs = self.generate_responses(prompts)
         responses = [output.outputs[0].text for output in outputs]

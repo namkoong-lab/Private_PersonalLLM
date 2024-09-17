@@ -1,5 +1,5 @@
 PersonalLLM/data/gen_response_logs.txt
-PersonalLLM/eval/scores/*
+PersonalLLM/eval/scores
 !PersonalLLM/eval/scores/all_scores.csv
 PersonalLLM/archive
 PersonalLLM/data/pipe_outputs.txt
@@ -8,8 +8,8 @@ PersonalLLM/eval/sweep_logs.txt
 PersonalLLM/eval/similar_pairs.txt
 PersonalLLM/eval/sweep_logs.txt
 !PersonalLLM/data/.env.example
-
-
+PersonalLLM/eval/schemas/*
+PersonalLLM/eval/archive
 
 .ipynb_checkpoints
 __pycache__
@@ -429,7 +429,6 @@ celerybeat-schedule
 
 # dotenv
 .env
-.env.*
 
 # virtualenv
 venv/

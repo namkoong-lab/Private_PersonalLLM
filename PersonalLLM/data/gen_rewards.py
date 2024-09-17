@@ -127,7 +127,6 @@ def worker(gpu, start_idx, end_idx, return_dict, worker_id, args, model_builder,
     dataset = load_and_combine_datasets(args.dataset_names)
     new_dataset = generate_reward_model_formatted_responses(dataset, tokenizer)
     # TODO: AS: When batch_size > 1, the rewards change. Find out why.
-    # Suspicion, does using dataset instead of dataloader change things?
     pipe_kwargs = {
         "batch_size": args.batch_size,  # eval_args.inference_batch_size,
         "truncation": True,
