@@ -1,0 +1,170 @@
+\documentclass{article}
+
+
+% if you need to pass options to natbib, use, e.g.:
+%     \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading neurips_2024
+
+
+% ready for submission
+\usepackage[nonatbib]{neurips_2024}
+
+
+% to compile a preprint version, e.g., for submission to arXiv, add add the
+% [preprint] option:
+%     \usepackage[preprint]{neurips_2024}
+
+
+% to compile a camera-ready version, add the [final] option, e.g.:
+%     \usepackage[final]{neurips_2024}
+
+
+% to avoid loading the natbib package, add option nonatbib:
+%    \usepackage[nonatbib]{neurips_2024}
+
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{xcolor}         % colors
+\usepackage{wrapfig}
+
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\input{math_commands.tex}
+\usepackage{../macros/packages-iclr}
+\usepackage{../macros/editing-macros}
+\usepackage{../macros/formatting}
+\usepackage{../macros/statistics-macros-iclr}
+\renewcommand{\eqref}[1]{(\ref{#1})}
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\usepackage[textsize=tiny]{todonotes}
+%\usepackage[disable,textsize=tiny]{todonotes}
+\newcommand{\hntodo}[1]{\todo{Hong: #1}}
+
+
+
+\title{\centering Pre-training and in-context learning IS \\ Bayesian inference \emph{a la} De Finetti}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to LaTeX to determine where to break the
+% lines. Using \AND forces a line break at that point. So, if LaTeX puts 3 of 4
+% authors names on the first line, and the last on the second line, try using
+% \AND instead of \And before the third author name.
+
+
+\author{%
+  Naimeng Ye\thanks{Use footnote for providing further information
+    about author (webpage, alternative address)---\emph{not} for acknowledging
+    funding agencies.} \\
+  Decision, Risk, Operations\\
+  Columbia University\\
+  New York, NY 10027 \\
+  \texttt{ny2336@columbia.edu} \\
+  \And
+  Hanming Yang \\
+  Columbia University\\
+  New York, NY 10027 \\
+  \texttt{hy2781}\\
+  \And
+  Andrew Siah \\
+  Columbia University\\
+  New York, NY 10027 \\
+  \texttt{andrew.siah}\\
+  \And
+  Hongseok Namkoong \\
+  Columbia University\\
+  New York, NY 10027 \\
+  \texttt{hn2369}\\
+}
+
+
+\begin{document}
+
+
+\maketitle
+
+
+\begin{abstract}
+  We extend in-context learning (ICL) beyond prediction settings, and
+  highlight its ability to perform explicit Bayesian inference and quantify
+  epistemic uncertainty through autoregressive sampling.  Instead of modeling
+  latent factors through priors and likelihoods (e.g., topic modeling), De
+  Finetti has long advocated for modeling exchangeable sequence of
+  \emph{observables}. According to this view, pre-training autoregressive
+  models is empirical Bayes optimizing marginal likelihood over observed
+  sequences (a.k.a. sequence prediction loss or perplexity), and repeated
+  forward generation performs Bayesian inference over latent variables. We
+  show that the sequence prediction loss controls performance on downstream
+  tasks where uncertainty quantification is key: statistical inference over
+  latent concepts and generalizing to long sequences. We highlight permutation
+  invariance / exchangeability over sets of tokens as a key structure enabling
+  Bayesian inference, and propose and demonstrate three approaches for
+  encoding this structure: data augmentation, regularization, and
+  modifications to causal masking.
+\end{abstract}
+
+
+
+
+
+
+
+\begin{comment}
+  In-context learning (ICL) has emerged as a powerful learning paradigm. Going
+  back to De Finetti’s work on Bayesian inference using observables—as opposed
+  to priors on latent factors/parameters—we establish an \emph{explicit}
+  equivalence between ICL and Bayesian inference \emph{a la} De Finetti. From
+  this view, pre-training is precisely empirical Bayes: it optimizes the
+  marginal likelihood of observed sequences; compared to fitting priors in
+  conventional empirical Bayes, pre-training fits posterior predictives using
+  transformers. Our observation highlights previously under-explored
+  capabilities of ICL: statistical inference and uncertainty
+  quantification. Our theory highlights the importance of predictive coherence
+  and motivates a new regularizer for pre-training sequence models to be
+  logically coherent Bayesians statisticians. Our preliminary empirical
+  results demonstrate coherency regularization can substantially improve the
+  inferential capabilities of ICL.
+\end{comment}
+
+
+\input{introduction}
+\input{bayesian-modeling}
+\input{theory}
+\input{experiments}
+
+\input{limitations}
+
+
+
+\newpage
+\bibliographystyle{plainnat}
+\bibliography{../bib.bib}
+
+\begin{appendix}
+\newpage
+\input{BLR}
+\newpage
+\input{proof-perplexity}
+\newpage
+\input{regret-proof}
+\newpage
+\input{experiments-details}
+\end{appendix}
+
+\input{checklist}
+
+
+\end{document}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

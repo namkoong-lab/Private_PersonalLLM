@@ -1,0 +1,19 @@
+\section{Related Work}
+
+
+\paragraph{Preference Datasets}
+Recent developments in large language models (LLMs) emphasize the importance of \emph{aligning} LLMs based on \emph{preference feedback} rather than merely pre-training on large corpora of language in a self-supervised manner. 
+Consequently, there has been a surge in the creation of open-source datasets \citep{bai2022training, nakano2022webgpt, köpf2023openassistant, dubois2024alpacafarm, lambert2024rewardbench} designed to support research on alignment methodologies. A significant limitation in the existing datasets is that they mainly enable fine-tuning to a single high-level notion of alignment that is uniform across the population, such as instruction-following in RLHF~\citep{ouyang2022training} and helpfulness and harmlessness \citep{bai2022training}. 
+
+\paragraph{Personalization}
+
+Personalization has been extensively researched across different fields, with previous datasets primarily focusing on applications such as search engines and recommender systems \citep{davidson2010youtube, das2007google, Xu_2022, F_rber_2020}. 
+Where personalization has been studied in NLP, it has traditionally been focused on learning to mimic a user's style, for example in writing headlines \citep{ao-etal-2021-pens}, crafting social media posts \citep{mazare-etal-2018-training}, or emulating historical text with simple dialogue models \citep{wu-etal-2021-personalized}.
+
+Recently, given the success of population-level alignment, researchers have begun to develop testbeds and methodology wherein the goal is to achieve a more granular level of personalized alignment for LLMs \citep{castricato2024personareproducibletestbedpluralistic, jang2023personalizedsoupspersonalizedlarge, kirk2024prismalignmentprojectparticipatory, li2024personalizedlanguagemodelingpersonalized}.
+Much of this work has focused on alignment for real or synthetic personas based on high-level attributes like race or occupation \citep{castricato2024personareproducibletestbedpluralistic, chan2024scalingsyntheticdatacreation}, or high-level notions of alignment with respect to response qualities like length, technicality, and style.  
+For example, \citet{jang2023personalizedsoupspersonalizedlarge} decomposes personal preferences along a handful of easily observable dimensions and performs personalized generation by merging models trained with different preference data based on these dimensions.
+Evaluation is often done by prompting GPT4 to select the preferred response based on preferences stated in its prompt \citep{jang2023personalizedsoupspersonalizedlarge, castricato2024personareproducibletestbedpluralistic}.  
+In an effort to highlight the need for broad participation and representation in LLM alignment, the PRISM dataset collects user-profiles and personalized preference feedback from over 1,000 diverse human participants \citep{kirk2024prismalignmentprojectparticipatory}.
+
+

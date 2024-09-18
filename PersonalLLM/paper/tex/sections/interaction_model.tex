@@ -1,0 +1,26 @@
+\section{Interaction Model}
+\TZ{I think this section can be split up between the sections before and after.  Section 3 should contain some notation, establishing what a reward model is, how we build our preference scores by weighting reward models, etc.  Section 5 should contain details that are particularly relevant to our experiment setting.  Also, I think we want people to use this dataset to facilitate work on many interaction models.  Some of this stuff is not typical to LLM/NLP work imo (e.g., the set of all possible queries being finite, the idea of a full potential outcome table), so I think it should be more of a detail of our experiments than how we expect everyone to interact with the dataset.}
+
+\label{sec:interaction-model}
+We propose an interaction model akin to those found in the recommendation system literature. The core of our research setting can be summarized as follows: we possess a database of proprietary data comprising extensive interaction histories from previous users. When a new user arrives, our goal is to utilize this rich, heterogeneous dataset to provide the best possible response to the new user's query, despite having only a limited initial interaction with them. This approach aims to effectively leverage past user data to enhance the quality of responses for new users. 
+
+\subsection{Notation}
+We denote the set of all possible queries as $\mathcal{X}$ finite, and the set of all possible responses being the entire natural language. Pre-test time, we assume that each query $x \in \mathcal{X}$ is associated with a set of possible responses $\mathcal{Y}_x$, i.e., pre-test time, there are only a finite set of responses that the system can provide. We denote the set of all possible interactions as $\mathcal{D} = \{(x,y): x\in \mathcal{X}, y\in \mathcal{Y}_x\}$. 
+
+Now each user is associated with a reward model $r: \mathcal{X} \times \mathcal{Y} \rightarrow \mathbb{R}$, which assigns a score to each possible response, with higher scores indicating better responses. We assume that the reward model is fixed for each user, and we aim to provide the best possible response to a query $x_{test} \sim \mathcal{X}$ from a new user, Alice, based on Alice's preference model.
+
+
+\subsection{Proprietary dataset}
+We conceptualize the dataset presented in Section~\ref{sec:dataset} as the full potential outcome table, representing all possible interactions that could have occurred. In practice, however, we only observe a subset of these interactions. For each past user (represented as a row in this table), we sample a subset of prompts (columns) that the user actually interacted with. For each prompt, we select one of the eight potential responses uniformly at random, representing the response that was actually shown to the user. We also record the user's feedback, or reward, for this response. With this sampling method, we generate an instantiation of the proprietory dataset of past interaction trajectories with old users, which can then be used to develop algorithms for personalization. 
+
+
+\subsection{Interaction dynamics}
+Given this dataset, we explain the benchmark we propose on personalization. 
+
+At test time, a new user, Alice, arrives with a query $x_{test}$. We assume that Alice has a preference model given by $r^A: \mathcal{X} \times \mathcal{Y} \rightarrow \mathbb{R}$. Alice first interacts with the system $N$ times, asking queries $x_1, \dots, x_N\in \mathcal{X}^N$, and is given responses $y_1,\dots, y_N$, upon which provides feedback $r^A_1,\dots, r^A_N$ where $r_i^A = r^A(x_i,y_i)$. Now given the instantiation of proprietary dataset, the algrithm aims to provide the best possible response to Alice's query, $y_{test}$.
+
+
+\subsection{Evaluation}
+For any given algorithm
+\[{Alg}\left(x_{test}, \{x_i,y_i,r^A_i\}_{i=1}^N\right) = y_{test}\]
+we evaluate the performance of the algorithm by the expected reward of the response $y_{test}$, i.e., $\mathbb{E}_{r^A}\left[r^A(x_{test},y_{test})\right]$. We aim to develop algorithms that maximize this expected reward, and we evaluate the performance of these algorithms on the test set of queries and responses.
