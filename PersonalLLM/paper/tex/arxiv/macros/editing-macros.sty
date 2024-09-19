@@ -1,0 +1,37 @@
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\definecolor{innerboxcolor}{rgb}{.9,.95,1}
+\definecolor{outerlinecolor}{rgb}{.6,0,.2}
+\definecolor{outerlinecoloreb}{rgb}{0,1,0}
+\definecolor{innerboxcoloreb}{rgb}{1,1,1}
+
+\newcommand{\hntodo}[1]{\todo{Hong: #1}}
+
+\newcommand{\hnlong}[1]{\fcolorbox{outerlinecolor}{innerboxcolor}{
+    \begin{minipage}{.9\textwidth}
+      \red{\bf HN:} {#1}
+  \end{minipage}} \\
+}
+
+\newcommand\hn[1]{\textcolor{red}{[HN: #1]}}
+
+\newcommand{\nytodo}[1]{\todo{Naimeng: #1}}
+
+\newcommand{\nylong}[1]{\fcolorbox{outerlinecolor}{innerboxcolor}{
+    \begin{minipage}{.9\textwidth}
+      \blue{\bf NY:} {#1}
+  \end{minipage}} \\
+}
+
+\newcommand\ny[1]{\textcolor{blue}{[NY: #1]}}
+
+
+
+\newenvironment{itbox}{                                                  
+  \vspace{.1cm}                                                          
+  \begin{adjustwidth}{.8cm}{.8cm}                                        
+    \itshape                                                             
+}{%                                                                      
+  \end{adjustwidth}                                                      
+  \vspace{.1cm}                                                          
+}                                                                        
