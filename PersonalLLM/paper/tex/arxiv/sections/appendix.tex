@@ -81,15 +81,15 @@ where $x$ is an input prompt, $s$ gives the source dataset for the prompt, $y_i$
 
 \subsection{Collection Process}
 
-Our prompts were collected by downloading and filtering the open source datasets mentioned previously.  Responses were generated using OpenRouter with a temperature of 1.0 and a maximum token length of 512.
+Our prompts were collected by downloading and filtering the open-source datasets mentioned previously.  Responses were generated using OpenRouter with a temperature of 1.0 and a maximum token length of 512.
 
 \subsection{Preprocessing/cleaning/labeling}
 
-All prompts are taken in their exact form from existing open source datasets, filtered by length according to Appendix A.1.1.  LLM responses are not filtered, edited, or cleaned in any way, either for storage or reward scoring.  
+All prompts are taken in their exact form from existing open-source datasets, filtered by length according to Appendix A.1.1.  LLM responses are not filtered, edited, or cleaned in any way, either for storage or reward scoring.  
 
 As a limitation, we note that all prompts and responses have not been manually inspected for quality or safety by a human, although prompts are sourced from existing, reputable datasets, and responses are generated from state-of-the-art language models that have (presumably in the case of black box models) undergone safety alignment.  Further, the personas that can be created via ensembling our reward models have not been tested for bias or alignment with a particular subgroup of the population.
 
-We also note that there is a known issue with many reward models, such that they may produce different scores under different conditions, in particular when the batch size changes \footnote{https://github.com/allenai/reward-bench/issues/137}.  Our reward scores are produced with a batch size of 1, and is tested for reproducibility and determinism.
+We also note that there is a known issue with many reward models, such that they may produce different scores under different conditions, in particular when the batch size changes \footnote{https://github.com/allenai/reward-bench/issues/137}.  Our reward scores are produced with a batch size of 1 and are tested for reproducibility and determinism.
 
 \subsection{Uses}
 
@@ -129,7 +129,7 @@ All semantic features are scored using pre-trained models from Huggingface.
     \item Emotions are scored using: SamLowe/roberta-base-go\_emotions
 \end{itemize}
 
-Below is a list of our syntatic features:
+Below is a list of our syntactic features:
 \begin{itemize}
     \item Count of tokens
     \item Count of unique words
@@ -195,15 +195,6 @@ Rel. attend - 1-2x/month & 0.818 & 0.807 & 0.825 & 0.699 & 0.833 \\
 Rel. attend - Few/year & 0.817 & 0.809 & 0.824 & 0.705 & 0.837 \\
 Rel. attend - Seldom & 0.811 & 0.800 & 0.821 & 0.703 & 0.835 \\
 Rel. attend - Never & 0.806 & 0.795 & 0.816 & 0.701 & 0.836 \\
-Republican & 0.791 & 0.776 & 0.805 & 0.680 & 0.812 \\
-Democrat & 0.800 & 0.795 & 0.804 & 0.719 & 0.834 \\
-Independent & 0.812 & 0.801 & 0.821 & 0.701 & 0.838 \\
-Other & 0.820 & 0.804 & 0.832 & 0.693 & 0.839 \\
-Less than \$30,000 & 0.828 & 0.813 & 0.833 & 0.693 & 0.838 \\
-\$30,000-\$50,000 & 0.814 & 0.802 & 0.822 & 0.698 & 0.834 \\
-\$50,000-\$75,000 & 0.807 & 0.796 & 0.816 & 0.703 & 0.833 \\
-\$75,000-\$100,000 & 0.800 & 0.791 & 0.811 & 0.705 & 0.829 \\
-\$100,000 or more & 0.797 & 0.790 & 0.807 & 0.708 & 0.831 \\
     \bottomrule
     \end{tabular}
     \caption{Representativeness scores in relation to real human opinions from important demographic groups for different LLMs, as well as our \textsf{PersonalLLM} population.}
@@ -217,6 +208,15 @@ Less than \$30,000 & 0.828 & 0.813 & 0.833 & 0.693 & 0.838 \\
      & \multicolumn{2}{c}{AI21 Labs} & \multicolumn{2}{c}{OpenAI} & \textsf{PersonalLLM} \\
     Demographic & j1-jumbo & j1-grande-v2 & ada & text-davinci-003 & \textbf{Ours} \\
     \midrule
+    Republican & 0.791 & 0.776 & 0.805 & 0.680 & 0.812 \\
+    Democrat & 0.800 & 0.795 & 0.804 & 0.719 & 0.834 \\
+    Independent & 0.812 & 0.801 & 0.821 & 0.701 & 0.838 \\
+    Other & 0.820 & 0.804 & 0.832 & 0.693 & 0.839 \\
+    Less than \$30,000 & 0.828 & 0.813 & 0.833 & 0.693 & 0.838 \\
+    \$30,000-\$50,000 & 0.814 & 0.802 & 0.822 & 0.698 & 0.834 \\
+    \$50,000-\$75,000 & 0.807 & 0.796 & 0.816 & 0.703 & 0.833 \\
+    \$75,000-\$100,000 & 0.800 & 0.791 & 0.811 & 0.705 & 0.829 \\
+    \$100,000 or more & 0.797 & 0.790 & 0.807 & 0.708 & 0.831 \\
 Very conservative & 0.797 & 0.778 & 0.811 & 0.662 & 0.811 \\
 Conservative & 0.796 & 0.780 & 0.810 & 0.684 & 0.817 \\
 Moderate & 0.814 & 0.804 & 0.822 & 0.706 & 0.838 \\
@@ -260,223 +260,5 @@ Below is the pseudocode for the baselines in Section 4. Actual code is available
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
-
-
-% \subsection{Additional Results}\label{app:exp_results}
-
-% \subsection{Dataset}\label{dataset}
-% We used open-source datasets that are available on Huggingface. All our datasets are publicly submitted on Huggingface and comply with the Croissant standard. Our dataset contributions include:
-
-% \begin{itemize}
-%     \item 37,919 prompts:
-%     \begin{itemize}
-%         \item \url{https://huggingface.co/datasets/namkoong-lab/PersonalLLM_prompts}
-%     \end{itemize}
-%     \item 10,402 rows of prompts, 8 diverse responses and scores from 10 reward models:
-%     \begin{itemize}
-%         \item \url{https://huggingface.co/datasets/namkoong-lab/PersonalLLM}
-%     \end{itemize}
-%     \astodo{Update the dataset links here}
-%     \item Evaluation Preference Dataset 1,000 rows:
-%     \begin{itemize}
-%         \item \url{https://huggingface.co/datasets/andrewsiah/Eval_Pref_Dataset}
-%     \end{itemize}
-%     \item Historical Interaction Preference Dataset 1,000 rows:
-%     \begin{itemize}
-%         \item \url{https://huggingface.co/datasets/andrewsiah/MetaLearningPrefDatabase1K}
-%     \end{itemize}
-% \end{itemize}
-
-% \subsection{8 Models Responses}
-
-% The 8 responses from each model were sampled with a temperature of $1.0$, and a maximum length of 512 from OpenRouter. We chose a maximum of 512 token length because some reward models have limited context length.
-
-% \subsection{Reward Models}\label{app:rms}
-
-% The 10 reward models we collected are from RewardBench. 
-
-% \begin{itemize}
-%     \item weqweasdas/RM-Gemma-2B \cite{dong2023raft}
-%     \item sfairXC/FsfairX-LLaMA3-RM-v0.1 \cite{dong2023raft}
-%     \item OpenAssistant/reward-model-deberta-v3-large-v2
-%     \item PKU-Alignment/beaver-7b-v1.0-cost \cite{ji2023beavertails}
-%     \item hendrydong/Mistral-RM-for-RAFT-GSHF-v0 \cite{dong2023raft}
-%     \item OpenAssistant/oasst-rm-2-pythia-6.9b-epoch-1
-%     \item OpenAssistant/oasst-rm-2.1-pythia-1.4b-epoch-2.5
-%     \item weqweasdas/RM-Mistral-7B \cite{dong2023raft}
-%     \item Ray2333/reward-model-Mistral-7B-instruct-Unified-Feedback
-%     \item weqweasdas/RM-Gemma-7B \cite{dong2023raft}
-% \end{itemize}
-
-% All the reward models are obtained from Huggingface on RewardBench's leaderboard and are instantiated as per RewardBench's codebase, where reward models are submitted and edited by the contributors themselves. 
-% https://huggingface.co/spaces/allenai/reward-bench \cite{lambert2024rewardbench}
-
-
-% \subsection{Additional Persona Analysis Details}\label{app:regression_details}
-
-% All features are scored using pre-trained models from Huggingface.
-
-% \begin{itemize}
-%     \item Formality is scored using: s-nlp/roberta-base-formality-ranker
-%     \item Educational value is scored using: HuggingFaceFW/fineweb-edu-classifier
-%     \item Emotion is scored using: SamLowe/roberta-base-go\_emotions
-% \end{itemize}
-
-% \subsection{Additional }
-
-
-% \section{Additional Experiment Details}\label{app:add_exp_det}
-
-% For our meta-learning approach (\textbf{Meta-Learning}), we consider a database of previous interactions between users and the language model. Specifically, for a particular user, we have $M$ interactions, each consisting of:
-
-% \begin{enumerate}
-%     \item A prompt given to the language model.
-%     \item A response generated by one of the eight different language models (treated as eight different arms in bandit literature).
-%     \item Feedback provided by the user, representing true values from the user's reward function (rather than binary ratings).
-% \end{enumerate}
-
-% Here, $M$ is a random variable uniformly distributed over the integers in the interval $[25, 50)$.
-
-% Now, consider a new user $u$ with a new prompt $p$. For this new user, we have limited interactions—$m$ interactions, where $m$ is a random variable uniformly distributed over the integers in the interval $[1, 5]$. Our goal is to use the previous user dataset and the interactions with the new user to generate a high-quality response for prompt $p$. We achieve this by finding the most similar and useful (prompt, response, rating) tuples in the dataset and appending them, along with the new user's interactions (prompt, response, rating), to the context for the language model to generate the response.
-
-% To enable efficient search and retrieval, we concatenate each (prompt, response, rating) tuple and feed it into the OpenAI API to generate an embedding of size 256. Assuming we have $N$ users, the embedding table has a shape of $(N, 49)$, where some entries are null because $M$ is not always 49. We replace the null entries with zero vectors and create a mask to identify these null entries. This transforms the embedding table into a tensor of shape $(N, 49, 256)$.
-
-% For each of the $m$ (prompt, response, rating) tuples of the new user, we compute the cosine similarity with this tensor table, apply the zero mask, and obtain a similarity score table of shape $(N, 49)$. We then extract the top $k$ entries with the highest similarity scores.
-
-% This process ensures that we can effectively utilize historical interactions to enhance the response quality for new users, leveraging similarities in past prompts, responses, and user feedback.
-
-
-% \subsection{Hardware}
-
-% We used two nodes of 8x A100 GPUs each. The evaluation pipeline is tested to run on 1 A100 GPU with 80GB of VRAM. 
-
-% \newpage
-% \section{Example Dataset}\label{app:add_exp_res}
-
-% \subsection{Sample Evaluation Preference Dataset}
-
-% \fbox{
-%     \parbox{\textwidth}{
-%          \textbf{person\_weight} : $[$ 0.99999855, 2.16500320e-29,..., 1.0112404759e-90 $]$\\
-%          \textbf{prompt\_1} : What is the best way to search for a job?\\
-%          \textbf{response\_1\_a} : There are several effective ways to search for a job...\\
-%          \textbf{response\_1\_b} : There's no single "best" way to find a job, as the most effective approach depends ...\\
-%          \textbf{chosen\_1} : b \\
-%          % \vspace{0.1cm}
-%         \vdots\\
-%         % \vspace{0.1cm}
-%          \textbf{prompt\_5} : The fifth prompt given to the person.\\
-%          \textbf{response\_5\_a} : The first response option for prompt 5.\\
-%          \textbf{response\_5\_b} : The second response option for prompt 5.\\
-%          \textbf{chosen\_5} : The chosen response for prompt 5.\\
-%          \textbf{user\_history\_length} : 5\\
-%          \textbf{test\_prompt} : What card games can suggest playing with my kids? They are 8 and 10.\\
-%          \textbf{best\_response} : Here are some card games suitable for your children's ages (8 and 10): 1. Uno...\\
-%          \textbf{best\_response\_model} : 1. **Go Fish**: - **Objective**: Collect pairs of cards. - ... \\
-%          \textbf{best\_response\_reward} : 2.3231\\
-%          \textbf{gpt4o\_response} : The response generated by GPT-4\\
-%          \textbf{gpt4o\_reward} : -0.1232\\
-%          \textbf{person\_id} : 1\\
-%    }
-% }
-
-% \subsection{Sample Evaluation Reward Dataset}
-% \fbox{
-%     \parbox{\textwidth}{
-%          \textbf{person\_weight} : $[$ 0.99999855, 2.16500320e-29,..., 1.0112404759e-90 $]$\\
-%          \textbf{prompt\_1} : What is the best way to search for a job?\\
-%          \textbf{response\_1} : There are several effective ways to search for a job...\\
-%          \textbf{reward\_1} : -0.1232\\
-%          % \vspace{0.1cm}
-%         \vdots\\
-%         % \vspace{0.1cm}
-%          \textbf{prompt\_4} : The fifth prompt given to the person.\\
-%          \textbf{response\_4} : The first response option for prompt 5.\\
-%          \textbf{reward\_4} : The reward for prompt, response 5.\\
-%          \textbf{user\_history\_length} : 4\\
-%          \textbf{test\_prompt} : What card games can suggest playing with my kids? They are 8 and 10.\\
-%          \textbf{best\_response} : Here are some card games suitable for your children's ages (8 and 10): 1. Uno...\\
-%          \textbf{best\_response\_model} : 1. **Go Fish**: - **Objective**: Collect pairs of cards. - ... \\
-%          \textbf{best\_response\_reward} : 2.3231\\
-%          \textbf{gpt4o\_response} : The response generated by GPT-4\\
-%          \textbf{gpt4o\_reward} : -0.1232\\
-%          \textbf{person\_id} : 1\\
-%    }
-% }
-
-% \newpage
-% \section{Baselines Implementation}\label{app:baselines}
-% \subsection{Result Analysis}
-
-% Our baseline methods are demonstrably simple, aiming to showcase the utility and realism of our dataset, as well as its capacity to generate rewards for testing personalization algorithms. We have explored two families of such algorithms.
-
-% We know that the output response is influenced by both the prompt and the method used to select previous interactions as context samples. An example is how ChatGPT utilizes Memory, which are summarized versions of conversations that are remembered and passed in as context in future conversations.
-% Our baseline results are not groundbreaking due to the random selection of previous interactions. We encourage future methodological research to improve upon our Best-of-8 baseline, ideally using a small model.
-
-% \subsection{Non Meta Learning}
-
-% For non meta learning, we limit ourselves to using context from the same row. E.G., for one shot, we draw one past conversation from the previous interaction and pass that as context to the prompt. 
-
-% Example for three shots.
-
-% \begin{verbatim}
-% prompt = "Below are some examples of the user's past conversation
-% history with a chosen response per prompt."
-% history = []
-% shots = 3 
-% for I in range(shots):
-%     past_prompt = row["prompt_" + str(I + 1)]
-%     chosen_response = row["chosen_" + str(I + 1)]
-%     history.append(
-%         "User: "
-%         + past_prompt
-%         + "\nAssistant: "
-%         + chosen_response
-%         + "\n\n"
-%     )
-% # Check if the total length of the history exceeds the maximum token limit
-% while len(''.join(history)) > 6000:
-%     # If it does, remove the earliest history
-%     history.pop(0)
-% prompt += ''.join(history)
-% prompt += "Use the contexts above to generate a good response for 
-% the user prompt below."
-% \end{verbatim}
-
-% \newpage
-% \subsection{Meta Learning}
-
-% Below is an example of Embedding search meta-learning. 
-
-% \begin{verbatim}
-% # Initialize the Full Prompt with instructions and a heading for current user's histories
-% full_prompt = "Below are some examples of the user's past conversation history"
-% full_prompt += "###Current User Histories###\n\n"
-
-% # Loop through each user interaction
-% for each interaction in user_history:
-%     full_prompt += '---Current User Interaction---\n\n'
-%     full_prompt += 'User:\n' + past_prompt + '\n\n'
-%     full_prompt += 'Assistant:\n' + past_response + '\n\n\n'
-
-% # Extract similar pairs from the training data
-% similar_pairs = extract_similar_pairs(training_data, current_interaction)
-
-% # Randomly sample the similar pairs
-% sampled_pairs = random_sample(similar_pairs, required_samples)
-
-% # Append similar users' interaction histories
-% full_prompt += "###Most Similar Users' Histories From Database###\n\n"
-% for each pair in sampled_pairs:
-%     full_prompt += '---Similar User Interaction---\n\n'
-%     full_prompt += 'User:\n' + similar_prompt + '\nAssistant:\n' + similar_response + '\n\n'
-
-% # Finalize the prompt with instructions for generating a response
-% full_prompt += "Use the above histories to generate a response for the following prompt"
-% full_prompt += 'User:\n' + test_prompt + '\n\nYour Response:'
-
-% # Return the full prompt
-% return full_prompt
-% \end{verbatim}
 
 

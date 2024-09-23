@@ -1,7 +1,7 @@
 \begin{figure}[!ht]
     \centering 
-    \includegraphics[width=\linewidth]{../figures/persona_prompting_comparison.png}
-    \caption{Probing the heterogeneous preferences across \textsf{PersonalLLM} prompt/responses given different settings of $\alpha$, and comparing to a persona prompting baseline.  \textbf{Top}: For a population of simulated users, the percentage of each population's vote share given to the most common winning response for each prompt; higher values indicate more preference diversity. \textbf{Middle}: A histogram showing the number of responses that receive at least one vote from a simulated population for each prompt; diverse preferences cause higher concentration on the right side of each plot. \textbf{Bottom}: Average win rates across the population for the 8 LLMs in our dataset.}
+    \includegraphics[width=\linewidth]{figures/persona_prompting_comparison.png}
+    \caption{Probing the heterogeneous preferences of our simulated users across the \textsf{PersonalLLM} dataset given different settings of $\alpha$, and comparing to a persona prompting baseline.  \textbf{Top}: For a population of simulated users, the percentage of each population's vote share given to the most common winning response for each prompt; higher values indicate more preference diversity. \textbf{Middle}: A histogram showing the number of responses that receive at least one vote from a simulated population for each prompt; diverse preferences cause higher concentration on the right side of each plot. \textbf{Bottom}: Average win rates across the population for the 8 LLMs in our dataset.}
     \label{fig:persona_diversity}
 \end{figure}
 
@@ -10,9 +10,9 @@
 Next, in order to validate our testbed, we explore the preferences exhibited by our simulated users over the \textsf{PersonalLLM} dataset.  
 
 \subsection{Preference Diversity and Comparison to Persona Prompting}
-% \hntodo{Enlarge figure titles, axis labels A LOT! Rule of thumb is whether it's clearly legible if printed on a letter sized paper. Figure 4 is especially challenging to read since the x-axis is different across rows. In the caption, it may be worth explicitly saying higher proportions on the left hand side implies greater diversity or something like this to help people skim the figure.}
 
-First, we examine whether populations of personal preference models sampled via the method outlined in Section~\ref{sec:sim_users} do in fact display heterogeneous preferences over the prompt/response pair in our dataset.
+
+First, we examine whether populations of personal preference models sampled via the method outlined in Section~\ref{sec:sim_users} do in fact display heterogeneous preferences over the prompt/response pairs in our dataset.
 In Figure~\ref{fig:persona_diversity} (left 3 columns), we provide experimental results for user bases of 1,000 \textsf{PersonalLLM} personal preference models sampled with parameters $\alpha=[0.01, 0.05, 0.1]$ and applied to the \textsf{PersonalLLM} test set to choose winning responses among the 8 included.
 The top row displays the percentage of prompts in the dataset for which the most popular winning response according to the population receives no more than 50\%, 75\%, and 95\% of the population vote; higher values indicate more diversity in preferred responses.  
 The middle row shows the percentage of prompts that have a given number of responses with at least one winning vote across the population; heterogeneous population preferences induce higher concentration on the right side of each plot.
@@ -32,37 +32,34 @@ However, if $\alpha$ is set too low, user preferences cluster very tightly aroun
 
 \begin{figure}[t]
     \centering 
-    \includegraphics[width=\linewidth]{../figures/syn_sem_ent.png}
+    \includegraphics[width=\linewidth]{figures/syn_sem_ent.png}
     \caption{Analysis of simulated user preferences with respect to prompt and response contents.
     \textbf{Left, middle:} For each user, we train a regression model to predict winning responses based on either semantic (left) or syntactic (middle) features.  For each feature, we show a box plot with the resultant regression coefficient across users.
-    \textbf{Right:} We examine the entropy in population preferences based on keywords in prompts, comparing words we would expect to inspire heterogeneity (e.g., imagine, opinion, poem) to prompts beginning with who, when, and where, which should evoke more objective answers. 
+    \textbf{Right:} We examine the entropy in population preferences based on keywords in prompts, comparing words we would expect to inspire heterogeneity (e.g., imagine, opinion, poem) to prompts beginning with ``who'', ``when'', and ``where'', which should evoke more objective answers. 
     }
     \label{fig:sem_syn}
 \end{figure}
 
 \subsection{Effects of Semantics and Syntax}
 
-% \hntodo{Enlarge figure titles, axis labels A LOT! Rule of thumb is whether it's clearly legible if printed on a letter sized paper}
+
 
 We further analyze the effects of semantics and syntax on the preferences of a simulated user base (with $\alpha=0.05$ and 1,000 users).  We use regression analysis to understand how different features may drive the preferences of different users, including semantic response features such as the formality or educational value or the expressions of certain emotions (approval, caring, excitement, joy, optimism), as well as syntactic features like length and the use of different parts of speech and formatting.
-For each user, we gather their most and least preferred responses for each of the test prompts, and create a binary prediction problem to predict whether a given response is a winning or losing response.
+For each user, we gather their most and least preferred responses for each of the test prompts and create a binary prediction problem to predict whether a given response is a winning or losing response.
 Responses are embedded using hand-crafted features (based on either syntax or semantics, which are studied separately), and a unique logistic regression model is trained \textit{for each user}.
-Semantic features were captured using pretrained classifiers, while syntactic features were engineered using nltk \citep{bird-loper-2004-nltk}.  See Appendix \ref{app:user_details} for complete details.
+Semantic features were captured using pre-trained classifiers, while syntactic features were engineered using nltk \citep{bird-loper-2004-nltk}.  See Appendix \ref{app:user_details} for complete details.
 
 In Figure~\ref{fig:sem_syn} (left and middle), for each feature we show a box plot with the resultant regression coefficient for that feature across users.  A positive coefficient suggests a feature associated with winning responses, while a negative coefficient suggests a feature's role in losing responses.  A tight box indicates homogeneous preferences, while a greater spread represents heterogeneity.
 Here, we can see a reasonable mix of heterogeneity and homogeneity across user preferences for different features. 
 Semantically, users tend to prefer responses with educational value and dislike highly formal responses, although the size of these preferences varies.
 Encouragingly, syntactic preferences do not seem to be driven by uniform preferences for simple features like length or the presence of formatting such as bullets or lists.
 
-In Figure~\ref{fig:sem_syn} (right), we compare the entropy in the population preferences over the responses to a given prompt based on keywords, comparing words we would expect to inspire heterogeneity (e.g., imagine, opinion, poem) to prompts beginning with who, when, and where, which evoke more objective answers.  We can see that the presence of these subjective cues leads to a more diverse set of preferences than those seeking simple entity or date responses.  Such diversity among the prompts creates a setting where an algorithm \textit{must not only learn how to personalize, but also when to personalize}.
-% \hntodo{Consider moving much of the figure descriptions to the caption. Currently readers will need to read the subsection carefully to comprehend the plots. Most will start with the initial paragraph and then move to the figure to stare at them.}
+In Figure~\ref{fig:sem_syn} (right), we compare the entropy in the population preferences over the responses to a given prompt based on keywords, comparing words we would expect to inspire heterogeneity (e.g., imagine, opinion, poem) to prompts beginning with ``who'', ``when'', and ``where'', which evoke more objective answers.  We can see that the presence of these subjective cues in prompts leads to a more diverse set of preferences than those seeking simple entity or date responses.  Such diversity among the prompts creates a setting where an algorithm \textit{must not only learn how to personalize, but also when to personalize}.
+
 
 \subsection{Comparison to Human Preferences}
 
-% \hntodo{Perhaps give a couple of real examples from OpinionQA to ground our analysis.}
-Finally, to understand how our synthetic personal preference models relate to human preferences over text responses, we surveyed a population of our simulated users on a set of questions with responses where a large and diverse set of humans have given their preferences in the past, the OpinionQA dataset
-% , emulating the work of 
-\citep{santurkar2023opinions}.
+Finally, to understand how our synthetic personal preference models relate to human preferences over text responses, we surveyed a population of our simulated users on a set of questions with responses where a large and diverse set of humans have given their preferences in the past, the OpinionQA dataset \citep{santurkar2023opinions}.
 OpinionQA is an appropriate validation set for our personas given that its broad coverage of topics (e.g., science, economics, politics, romance, and many other topics) aligns with the open-domain nature of our prompt set.  See Table~\ref{tab:opinion_qa_examples} for example questions and answers.
 
 \begin{table}[!ht]
@@ -81,8 +78,8 @@ OpinionQA is an appropriate validation set for our personas given that its broad
 
 \end{table}
 
-Following this previous work, we calculate the representativeness score of the opinion distribution given by our simulated preference models.
-This score is based on the Wasserstein distance of the synthetic population preferences from that of real human populations for each question.
+Following previous work, we calculate the representativeness score of the opinion distribution given by our simulated preference models.
+This score is based on the Wasserstein distance of the synthetic population preferences from that of a real human population for each question.\footnote{The score is $1-\mathcal{W}$ for distance $\mathcal{W}$; a higher score indicates more representative preferences.}
 To have a high representativeness score, our simulated user population would have to display heterogeneous preferences over question/response sets where humans do so, and produce homogeneous (and matching) preferences in cases where humans do the same. 
 
 Our population of simulated users produces a representativeness score of 0.839 with respect to the overall population of the US, higher than any LLM in the original study and near as representative of the overall population as some real, large demographic groups.  
@@ -121,6 +118,5 @@ In fact, this is the case for 59 of 60 demographic groups in their study (see Ap
 \subsection{Summary of Analysis}
 
 Taken together, these results show that our simulated user reward models: 1) produce heterogeneous preferences over our dataset of prompts and responses, considerably more so than persona prompting an LLM, 2) display reasonable and diverse preferences with respect to syntactic and semantic content of prompts, and 3) simulate a user base that better represents diverse human opinions than many popular LLMs, without resorting to explicit stereotyping.
-% \hntodo{Claiming better representation of real human opinions may be untenable. One option is to focus on diversity and heterogeneity rather than realism.}
 
 

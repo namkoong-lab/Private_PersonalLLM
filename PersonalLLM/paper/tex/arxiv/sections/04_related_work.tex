@@ -3,7 +3,7 @@
 
 \paragraph{Preference Datasets}
 Recent developments in large language models (LLMs) emphasize the importance of \emph{aligning} LLMs based on \emph{preference feedback} rather than merely pre-training on large corpora of language in a self-supervised manner. 
-Consequently, there has been a surge in the creation of open-source datasets \citep{bai2022training, nakano2022webgpt, köpf2023openassistant, dubois2024alpacafarm, lambert2024rewardbench} designed to support research on alignment methodologies. A significant limitation in the existing datasets is that they mainly enable fine-tuning to a single high-level notion of alignment that is uniform across the population, such as instruction-following in RLHF~\citep{ouyang2022training} and helpfulness and harmlessness \citep{bai2022training}. 
+Consequently, there has been a surge in the creation of open-source datasets \citep{bai2022training, nakano2022webgpt, kopf2023openassistant, dubois2024alpacafarm, lambert2024rewardbench} designed to support research on alignment methodologies. A significant limitation in the existing datasets is that they mainly enable fine-tuning to a single high-level notion of alignment that is uniform across the population, such as instruction-following in RLHF~\citep{ouyang2022training} and helpfulness and harmlessness \citep{bai2022training}. 
 
 \paragraph{Personalization}
 
@@ -14,6 +14,6 @@ Recently, given the success of population-level alignment, researchers have begu
 Much of this work has focused on alignment for real or synthetic personas based on high-level attributes like race or occupation \citep{castricato2024personareproducibletestbedpluralistic, chan2024scalingsyntheticdatacreation}, or high-level notions of alignment with respect to response qualities like length, technicality, and style.  
 For example, \citet{jang2023personalizedsoupspersonalizedlarge} decomposes personal preferences along a handful of easily observable dimensions and performs personalized generation by merging models trained with different preference data based on these dimensions.
 Evaluation is often done by prompting GPT4 to select the preferred response based on preferences stated in its prompt \citep{jang2023personalizedsoupspersonalizedlarge, castricato2024personareproducibletestbedpluralistic}.  
-In an effort to highlight the need for broad participation and representation in LLM alignment, the PRISM dataset collects user-profiles and personalized preference feedback from over 1,000 diverse human participants \citep{kirk2024prismalignmentprojectparticipatory}.
+In an effort to highlight the need for broad participation and representation in LLM alignment, the PRISM dataset collects user profiles and personalized preference feedback from over 1,000 diverse human participants \citep{kirk2024prismalignmentprojectparticipatory}.
 
 

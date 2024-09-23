@@ -1,11 +1,12 @@
 \begin{abstract}
 
 As LLMs become capable of complex tasks, there is growing potential for personalized interactions tailored to the subtle and idiosyncratic preferences of the user.
-We present a public benchmark, PersonalLLM, focusing on adapting LLMs to provide maximal benefits for a particular user. 
+We present a public benchmark, \textsf{PersonalLLM}, focusing on adapting LLMs to provide maximal benefits for a particular user. 
 Departing from existing alignment benchmarks that implicitly assume uniform preferences, we curate open-ended prompts paired with many high-quality answers over which users would be expected to display heterogeneous latent preferences.
-Instead of persona prompting LLMs based on high-level attributes (e.g., user race or response length), which yields homogeneous preferences relative to humans, we develop a method that can simulate diverse preferences from a set of pre-trained reward models.
+Instead of persona-prompting LLMs based on high-level attributes (e.g., user's race or response length), which yields homogeneous preferences relative to humans, we develop a method that can simulate a large user base with diverse preferences from a set of pre-trained reward models.
 Our dataset and generated personalities offer an innovative testbed for developing personalization algorithms that grapple with continual data sparsity---few relevant feedback from the particular user---by leveraging historical data from other (similar) users.
-We explore basic in-context learning and meta-learning baselines to illustrate the utility of PersonalLLM and highlight the need for future methodological development.
+We explore basic in-context learning and meta-learning baselines to illustrate the utility of \textsf{PersonalLLM} and highlight the need for future methodological development.
+Our dataset is available at \url{https://huggingface.co/datasets/namkoong-lab/PersonalLLM}.
 
 \end{abstract}
 
@@ -14,31 +15,31 @@ We explore basic in-context learning and meta-learning baselines to illustrate t
 
 The \textit{alignment} of LLMs with human preferences has recently 
 received much attention, with a focus on adapting model outputs to reflect universal population-level values.
-A typical goal is to take a pre-trained model that cannot reliably follow complex user instructions \citep{wei2022finetuned} and can easily be made to produce dangerous and offensive responses \citep{perez2022red},
-and adapt it to  the instructions of its user base \citep{ouyang2022training} or train a generally helpful and harmless assistant \citep{bai2022training}. 
+A typical goal is to take a pre-trained model that cannot reliably follow complex user instructions \citep{wei2022finetuned} and can easily be made to produce dangerous and offensive responses \citep{perez2022red} and adapt it to the instructions of its user base \citep{ouyang2022training} or train a generally helpful and harmless assistant \citep{bai2022training}. 
 By assuming a \emph{uniform preference} across the population, recent successes~\citep{ziegler2020finetuning, ouyang2022training, christiano2023deep} demonstrate the feasibility of learning
 and optimizing a monolithic preference (``reward model''). Alignment techniques have provided the basis for popular commercial applications like ChatGPT, as well as instruction-tuned open-source models \citep{touvron2023llama}.
 
 The rapid advancement in LLM capabilities opens the door to an even more refined notion of human preference alignment: personalization.
 A personalized model should adapt to the preferences and needs of a particular user, and provide maximal benefits as it accumulates interactions (see Figure~\ref{fig:main_figure}).
 Given the expected data sparsity in this setting, beyond a particular user's data, such personalized language systems will likely also rely on historical data from other (similar) users in order to learn how to learn from a small set of new user feedback (see Figure~\ref{fig:metalearn}).
-By discovering patterns across users, these systems will be able to efficiently optimize their responses, ultimately leading to more effective and beneficial conversational AI.  For example:
+By discovering patterns across users, these systems will be able to efficiently optimize their responses, ultimately leading to more effective and beneficial conversational AI. 
+We are motivated by the following potential use cases.
 \begin{itemize}
-\item A personalized learning experiences could be crafted by adapting educational chat assistants to the specific learning pace and style of individual students based on previous successful interactions with similar students.  
+\item Personalized learning experiences could be crafted by adapting educational chat assistants to the specific learning pace and style of individual students based on previous successful interactions with similar students.  
 \item 
 Customer support chatbots could offer more accurate and empathetic responses by drawing on a wealth of previous interactions, leading to quicker resolution times and higher customer satisfaction. 
-\item In healthcare, personalized chatbots could provide tailored advice based on patients with similar medical history and communication preferences. 
+\item In healthcare, personalized chatbots could provide tailored advice based on patients with similar medical histories and communication preferences. 
 \end{itemize}
 
 Compared to conventional applications where prompts have a uniform notion of ``ground truth'' (e.g., question answering),
-LLM personalization is distinguished by the need to study open-ended prompts where users exhibit heterogeneous preferences across many possible high-quality answers.
+LLM personalization is distinguished by the need to study open-ended prompts where users exhibit heterogeneous preferences across many possible high-quality answers (Figure~\ref{fig:main_figure}).
 While personal preferences may vary according to simple features like user age \cite{chan2024scalingsyntheticdatacreation, castricato2024personareproducibletestbedpluralistic} and answer length and technicality \cite{li2024personalizedlanguagemodelingpersonalized}, they also involve more abstract dimensions of culture, politics, and language \cite{kirk2024prismalignmentprojectparticipatory}, as well as aspects of personality that are difficult to explain \citep{hwang2023aligninglanguagemodelsuser}.
 A personalized LLM should be able to adapt to 
 subtle, idiosyncratic, and sometimes sensitive differences between user tastes as it gathers more interactions.
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\textwidth]{../figures/fig1.png}
+    \includegraphics[width=\textwidth]{figures/fig1new.png}
     \caption{
     Standard LLMs require tedious re-prompting to learn a user’s preferences in each session. \textsf{PersonalLLM} aims to learn a unique user's diverse preferences to maximize long-term satisfaction.}
     \label{fig:main_figure}
