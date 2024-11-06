@@ -236,9 +236,9 @@ Other & 0.801 & 0.783 & 0.807 & 0.681 & 0.818 \\
 \section{Experiments}\label{app:exp}
 
 
-\subsection{Additional Details}\label{app:exp_details}
+\subsection{Pseudocode}\label{app:exp_details}
 
-Below is the pseudocode for the baselines in Section 4. Actual code is available at 
+Below is the pseudocode for the baselines in Section 4. Actual code is available at \url{https://github.com/namkoong-lab/PersonalLLM}.
 
 \begin{algorithm}
 \caption{MetaLearnKShotICLAlgorithm}
@@ -261,4 +261,49 @@ Below is the pseudocode for the baselines in Section 4. Actual code is available
 \end{algorithmic}
 \end{algorithm}
 
+\newpage
+\subsection{Prompt Template}
 
+Below is a prompt template we used in our experiments for winning and losing responses appended during inference.
+\vspace{1cm}
+\hrule
+\begin{verbatim}
+Below are some examples of past conversations with liked and disliked responses
+per prompt. 
+
+User: {ICL_Prompt_1}
+Liked Response: {Prompt_1_Liked_Response}
+Disliked Response: {Prompt_1_Disliked_Response}
+
+User: {ICL_Prompt_2}
+Liked Response: {Prompt_2_Liked_Response}
+Disliked Response: {Prompt_2_Disliked_Response}
+
+Use the contexts above to generate a good response for the user prompt below. 
+Your response should be similar to the winning responses and dissimilar from
+the losing responses. 
+
+User: {Test_prompt}
+Response: 
+\end{verbatim}
+\hrule
+\vspace{1cm}
+Below is a prompt template we used in our experiments for winning responses only appended during inference.
+\vspace{1cm}
+\hrule
+\begin{verbatim}
+Below are some examples of past conversations with liked responses per prompt. 
+
+User: {ICL_Prompt_1}
+Liked Response: {Prompt_1_Liked_Response}
+
+User: {ICL_Prompt_2}
+Liked Response: {Prompt_2_Liked_Response}
+
+Use the contexts above to generate a good response for the user prompt below. 
+Your response should be similar to the winning responses.
+
+User: {Test_prompt}
+Response: 
+\end{verbatim}
+\hrule

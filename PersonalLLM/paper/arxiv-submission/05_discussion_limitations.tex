@@ -1,0 +1,34 @@
+\vspace{-5pt}
+\section{Discussion}\label{sec:discussion}
+\vspace{-5pt}
+
+We present \textsf{PersonalLLM}, a dataset and benchmark meant to spur the development of algorithms for LLM personalization, a critical and under-explored area with significant potential for enhancing interaction quality.   We discuss the potential of the empirical foundation we develop and highlight potential risks and limitations.
+
+
+\paragraph{Meta-Learning for Personalization}
+We hope to encourage more work in the meta-learning setting, as exemplified by our experiments. This setting mirrors many real-world use cases where an organization has a large proprietary dataset from historical users but a very limited interaction history with this particular user. 
+Prior work on cold-start problems has focused on the task of recommending discrete content items from a media (or other) library. 
+Extending and developing these techniques for LLMs is an exciting direction for future research. 
+
+\paragraph{Risks and Limitations} 
+We must consider the risks and limitations associated both with the release of our original benchmark dataset, as well as the larger goal of LLM personalization.
+
+With respect to \textsf{PersonalLLM}, we note all prompts and responses have not been manually inspected for quality or safety by a human, although prompts are sourced from existing, reputable datasets, and responses are generated from state-of-the-art language models that have (presumably in the case of black box models) undergone safety alignment.
+Our benchmark is also limited with respect to the realism of the personas created by weighting reward models.
+
+On a broader note, the goal of LLM personalization brings particular risks.
+One common concern is the creation of filter bubbles, where the model's outputs become increasingly tailored to the user's past existing preferences, potentially reinforcing political beliefs and biases, isolating the user from opposing viewpoints, and narrowing the diversity of information presented.
+Another potential issue is stereotyping, where the model may perpetuate or even amplify biases based on the user's demographic information or behavior patterns.
+Feedback loops may also emerge, where the model behavior affects human behavior and vice versa, leading to negative personal and unknown societal consequences.
+Personification risks arise, as over time the user may develop a pseudo-personal relationship with the user, potentially fostering over-reliance on the LLM for advice or companionship. Finally, 
+if used by malicious actors, personalized
+LLMs can be employed to manipulate and extort
+individuals by exploiting personal levers.
+Given these and many other predictable (and unpredictable) potential risks, it is important that any efforts at LLM personalization are accompanied by research in robust transparency mechanisms and safeguards for personalization algorithms. Developing an empirical foundation for such efforts is another promising avenue for future work.
+
+\paragraph{Future Directions} Given that LLMs have only recently reached a level of capabilities meriting their widespread adoption for industrial and personal use, the study of LLM personalization is necessarily in its earliest stages of development.  
+It follows that there are many important and exciting avenues for future research, with respect to datasets, methodology, fairness, safety, and other aspects of responsible and reliable machine learning deployment.  
+Since \textsf{PersonalLLM} is the first dataset to enable the study of complex personalized preferences expressed over many high-quality responses (to our knowledge) by a large, diverse user base, the benchmark can be extended in many ways. 
+For example, one might imagine a distribution shift scenario, where over time, personal preferences shift, and the personalization algorithm must balance stability and plasticity.  
+Also, we hope that our testbed drives the development of even more realistic personalization datasets and evaluation methods that more closely mirror the online and non-i.i.d.~nature of the conversational setting and more closely capture the true nuance and diversity of human personal preferences.  Finally, continued work in personalization algorithms must be accompanied by a proportional amount of work in personalization safety, fairness, and reliability.  Future research may consider different aspects of the deployment pipeline (e.g., model architecture, data collection) and interaction model (e.g., UI/UX) with these concerns in mind.
+

@@ -1,0 +1,90 @@
+% -*- Mode: Latex; -*-
+% ------------------------------------------------------------------------
+% Default style
+% ------------------------------------------------------------------------
+
+\documentclass[11pt]{article}
+\usepackage[numbers]{natbib}
+\usepackage{macros/packages}
+\usepackage{macros/editing-macros}
+\usepackage{macros/formatting}
+\usepackage{macros/statistics-macros}
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{xcolor}         % colors
+\usepackage{wrapfig}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usetikzlibrary{%
+  calc,
+  fit,
+  arrows,
+  arrows.meta,
+  positioning,
+  decorations.pathreplacing,
+  decorations.shapes,
+}
+
+% \onehalfspacing
+% \renewcommand{\baselinestretch}{1.35}
+
+\begin{document}
+
+% Control whitespace around equations
+\abovedisplayskip=8pt plus0pt minus3pt
+\belowdisplayskip=8pt plus0pt minus3pt
+
+% ------------------------------------------------------------------------
+% Main Paper Body
+% ------------------------------------------------------------------------
+
+
+% ------------------------------------------------------------------------
+% Default title and authorship
+% ------------------------------------------------------------------------
+\begin{center}
+  {\huge PersonalLLM: Tailoring LLMs to Individual Preferences } \\
+  \vspace{.5cm} {\Large Thomas P. Zollo$^*$ ~~~ Andrew Siah$^*$}\footnote{* These authors contributed equally to this work}\\
+  
+  \vspace{.2cm}
+  {\Large ~~~ Naimeng Ye ~~ Ang Li ~~ Hongseok Namkoong} \\
+  \vspace{.2cm}
+  {\large Columbia University} \\
+  \vspace{.2cm}
+  \texttt{\{tpz2105, andrew.siah, ny2336, al4263, hongseok.namkoong\}@columbia.edu}
+\end{center}
+
+
+
+% ------------------------------------------------------------------------
+% Abstract
+% ------------------------------------------------------------------------
+
+
+
+
+\input{00_intro}
+\input{01_dataset}
+\input{02_analysis}
+\input{03_experiments}
+\input{04_related_work}
+\input{05_discussion_limitations}
+
+
+
+\newpage
+\bibliographystyle{plainnat}
+\bibliography{../cite.bib}
+
+\newpage
+\begin{appendix}
+\input{appendix}
+\end{appendix}
+
+\end{document}
